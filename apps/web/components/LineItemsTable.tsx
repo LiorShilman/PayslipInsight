@@ -13,65 +13,101 @@ const SECTION_LABELS: Record<LineItemSection, string> = {
   employer_contribution: 'הפרשות מעסיק',
 };
 
+const SECTION_COLOR: Record<LineItemSection, string> = {
+  payment: 'var(--color-ink)',
+  mandatory_deduction: 'var(--color-accent-alert)',
+  voluntary_deduction: 'var(--color-amber)',
+  employer_contribution: 'var(--color-accent)',
+};
+
 const SECTION_ORDER: LineItemSection[] = ['payment', 'mandatory_deduction', 'voluntary_deduction', 'employer_contribution'];
 
 type Props = { lineItems: LineItem[] };
 
-/** SPEC.md §8.2 — טבלה מלאה, מסוננת לפי section, עם provenance click לכל שורה. */
+/**
+ * SPEC.md §8.2 — כל השורות, מסונן לפי section, עם provenance click.
+ * במקום <table> נפרד לכל סקציה (שגרם לרוחבי עמודות לא-מיושרים בין
+ * סקציות), רשת CSS Grid אחת לכל הרכיב: תווית | בר יחסי לגודל | סכום —
+ * אותה תבנית עמודות בכל הסקציות. הבר יחסי לערך הגדול ביותר *באותה סקציה*.
+ */
 export function LineItemsTable({ lineItems }: Props) {
   const { setHighlighted } = useProvenance();
+
+  const sections = SECTION_ORDER.map((section) => ({
+    section,
+    rows: lineItems.filter((li) => li.section === section),
+  })).filter((s) => s.rows.length > 0);
 
   return (
     <Card>
       <CardTitle>כל השורות</CardTitle>
-      <div className="mt-4 flex flex-col gap-6">
-        {SECTION_ORDER.map((section) => {
-          const rows = lineItems.filter((li) => li.section === section);
-          if (rows.length === 0) return null;
+
+      <div className="mt-4 grid grid-cols-[minmax(0,1fr)_minmax(60px,2fr)_auto] items-center gap-x-3 gap-y-1.5">
+        {sections.map(({ section, rows }) => {
+          const maxAmount = Math.max(...rows.map((r) => r.amount), 1);
+          const color = SECTION_COLOR[section];
 
           return (
-            <div key={section}>
-              <h4 className="mb-2 text-sm font-semibold text-ink-muted">{SECTION_LABELS[section]}</h4>
-              <table className="w-full border-collapse text-sm">
-                <thead>
-                  <tr className="border-b border-ink/15">
-                    <th scope="col" className="py-2 text-start font-semibold text-ink">
-                      תיאור
-                    </th>
-                    <th scope="col" className="py-2 text-start font-semibold text-ink">
-                      סכום
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((item, index) => (
-                    <tr key={`${item.label}-${index}`} className="border-b border-ink/5">
-                      <td className="py-2 text-ink">
-                        {item.label}
-                        {item.taxable === false && <span className="ms-2 text-xs text-ink-muted">(פטור ממס)</span>}
-                      </td>
-                      <td className="py-2">
-                        <button
-                          type="button"
-                          disabled={!item.prov}
-                          onClick={() => item.prov && setHighlighted(item.prov)}
-                          className="inline-flex items-center gap-2 rounded-sm px-1 -ms-1 disabled:cursor-default enabled:hover:bg-accent-soft enabled:focus-visible:outline enabled:focus-visible:outline-2 enabled:focus-visible:outline-accent"
-                          aria-label={`${item.label}: ${formatILS(item.amount)}${item.prov ? ' — הצג במסמך המקורי' : ''}`}
-                        >
-                          <span dir="ltr" className="font-medium tabular-nums text-ink">
-                            {formatILS(item.amount)}
-                          </span>
-                          {item.prov && <ConfidenceBadge confidence={item.prov.confidence} />}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div key={section} className="col-span-3 grid grid-cols-subgrid gap-x-3 gap-y-1.5">
+              <h4 className="col-span-3 mt-4 text-sm font-semibold text-ink-muted first:mt-0">
+                {SECTION_LABELS[section]}
+              </h4>
+              {rows.map((item, index) => (
+                <button
+                  key={`${item.label}-${index}`}
+                  type="button"
+                  disabled={!item.prov}
+                  onClick={() => item.prov && setHighlighted(item.prov)}
+                  className="col-span-3 grid grid-cols-subgrid items-center gap-x-3 rounded-sm py-1 text-start disabled:cursor-default enabled:hover:bg-accent-soft enabled:focus-visible:outline enabled:focus-visible:outline-2 enabled:focus-visible:outline-accent"
+                  aria-label={`${item.label}: ${formatILS(item.amount)}${item.prov ? ' — הצג במסמך המקורי' : ''}`}
+                >
+                  <span className="truncate text-sm text-ink">
+                    {item.label}
+                    {item.taxable === false && <span className="ms-2 text-xs text-ink-muted">(פטור ממס)</span>}
+                  </span>
+                  <span className="h-2 rounded-full bg-ink/5">
+                    <span
+                      className="block h-full rounded-full"
+                      style={{ width: `${(item.amount / maxAmount) * 100}%`, backgroundColor: color }}
+                    />
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <span dir="ltr" className="text-sm font-medium tabular-nums text-ink">
+                      {formatILS(item.amount)}
+                    </span>
+                    {item.prov && <ConfidenceBadge confidence={item.prov.confidence} />}
+                  </span>
+                </button>
+              ))}
             </div>
           );
         })}
       </div>
+
+      <details className="mt-4">
+        <summary className="cursor-pointer text-sm text-ink-muted">טבלת נתונים (נגישות)</summary>
+        <table className="mt-2 w-full text-sm">
+          <caption className="sr-only-table">כל שורות התלוש</caption>
+          <thead>
+            <tr className="border-b border-ink/15">
+              <th className="py-1 text-start font-semibold">סקציה</th>
+              <th className="py-1 text-start font-semibold">תיאור</th>
+              <th className="py-1 text-start font-semibold">סכום</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lineItems.map((item, index) => (
+              <tr key={`${item.label}-${index}`} className="border-b border-ink/5">
+                <td className="py-1">{SECTION_LABELS[item.section]}</td>
+                <td className="py-1">{item.label}</td>
+                <td className="py-1" dir="ltr">
+                  {formatILS(item.amount)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </details>
     </Card>
   );
 }

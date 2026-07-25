@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { EmployerCostCard } from '@/components/EmployerCostCard';
 import { GrossToNetWaterfall } from '@/components/charts/GrossToNetWaterfall';
+import { MoneyFlowSankey } from '@/components/charts/MoneyFlowSankey';
+import { PayCompositionChart } from '@/components/charts/PayCompositionChart';
 import { Card, CardTitle } from '@/components/ui/card';
 import { LineItemsTable } from '@/components/LineItemsTable';
 import { DocumentViewer } from '@/components/viewer/DocumentViewer';
@@ -81,14 +83,22 @@ export default function DashboardPage() {
           <div className="flex flex-col gap-6">
             <motion.div custom={0} initial="hidden" animate="show" variants={reveal}>
               <Card>
-                <CardTitle>ברוטו → נטו</CardTitle>
+                <CardTitle>איך הכסף זורם</CardTitle>
+                <p className="mt-1 text-sm text-ink-muted">מהברוטו שלך, לכל יעד — ניכויים ונטו לתשלום.</p>
                 <div className="mt-4">
-                  <GrossToNetWaterfall payslip={payslip} waterfall={derived.waterfall} />
+                  <MoneyFlowSankey payslip={payslip} />
                 </div>
               </Card>
             </motion.div>
 
-            <motion.div custom={1} initial="hidden" animate="show" variants={reveal}>
+            <motion.div
+              custom={1}
+              initial="hidden"
+              animate="show"
+              variants={reveal}
+              className="grid gap-6 md:grid-cols-2"
+            >
+              <PayCompositionChart payDistribution={derived.payDistribution} />
               <EmployerCostCard
                 derived={derived}
                 grossPay={payslip.totals.grossPay.value}
@@ -97,6 +107,15 @@ export default function DashboardPage() {
             </motion.div>
 
             <motion.div custom={2} initial="hidden" animate="show" variants={reveal}>
+              <Card>
+                <CardTitle>ברוטו → נטו, צעד אחר צעד</CardTitle>
+                <div className="mt-4">
+                  <GrossToNetWaterfall payslip={payslip} waterfall={derived.waterfall} />
+                </div>
+              </Card>
+            </motion.div>
+
+            <motion.div custom={3} initial="hidden" animate="show" variants={reveal}>
               <LineItemsTable lineItems={payslip.lineItems} />
             </motion.div>
           </div>

@@ -30,7 +30,9 @@ export function GrossToNetWaterfall({ payslip, waterfall }: Props) {
   }
 
   const maxValue = Math.max(payslip.totals.grossPay.value, ...waterfall.map((s) => s.cumulativeAfter));
-  const width = 720;
+  // רוחב יחסי למספר השלבים — לא נדחס לרוחב קבוע. תלושים אמיתיים יכולים
+  // להכיל 15+ שורות ניכוי; דחיסה לרוחב קבוע היא מה שגרם להתנגשות תוויות.
+  const width = Math.max(720, waterfall.length * 88);
   const innerWidth = width - MARGIN.left - MARGIN.right;
   const innerHeight = HEIGHT - MARGIN.top - MARGIN.bottom;
 
@@ -46,7 +48,8 @@ export function GrossToNetWaterfall({ payslip, waterfall }: Props) {
 
   return (
     <div>
-      <svg viewBox={`0 0 ${width} ${HEIGHT}`} role="img" aria-labelledby="waterfall-title" className="w-full">
+      <div className="overflow-x-auto">
+      <svg width={width} height={HEIGHT} role="img" aria-labelledby="waterfall-title" className="max-w-none">
         <title id="waterfall-title">גרף ברוטו לנטו</title>
         <Group left={MARGIN.left} top={MARGIN.top}>
           <line x1={0} y1={innerHeight} x2={innerWidth} y2={innerHeight} stroke="var(--color-ink)" strokeOpacity={0.15} />
@@ -89,7 +92,9 @@ export function GrossToNetWaterfall({ payslip, waterfall }: Props) {
                   onKeyDown={(e) => {
                     if (prov && (e.key === 'Enter' || e.key === ' ')) setHighlighted(prov);
                   }}
-                />
+                >
+                  <title>{`${step.label}: ${formatILS(step.amount)}`}</title>
+                </rect>
                 <text
                   x={barX + barWidth / 2}
                   y={barY - 8}
@@ -116,6 +121,7 @@ export function GrossToNetWaterfall({ payslip, waterfall }: Props) {
           })}
         </Group>
       </svg>
+      </div>
 
       <details className="mt-2">
         <summary className="cursor-pointer text-sm text-ink-muted">טבלת נתונים (נגישות)</summary>
