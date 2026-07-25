@@ -1,0 +1,11 @@
+packages:
+  - "packages/*"
+  - "apps/*"
+allowBuilds:
+  esbuild: true
+  sharp: true
+minimumReleaseAgeExclude:
+  - '@anthropic-ai/sdk@0.115.0'
+  - postcss@8.5.23
+  - playwright-core@1.62.0
+  - playwright@1.62.0

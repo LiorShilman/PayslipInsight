@@ -1,0 +1,26 @@
+{
+  "year": 2026,
+  "source": "https://www.gov.il/he/departments/israel_tax_authority",
+  "lastVerified": "TODO",
+  "creditPointMonthlyValue": null,
+  "incomeTaxBrackets": [],
+  "surtaxThresholdAnnual": null,
+  "nationalInsurance": {
+    "employeeReducedRate": null,
+    "employeeFullRate": null,
+    "employerReducedRate": null,
+    "employerFullRate": null,
+    "reducedRateCeilingMonthly": null,
+    "maxIncomeCeilingMonthly": null
+  },
+  "healthTax": {
+    "reducedRate": null,
+    "fullRate": null
+  },
+  "mandatoryPension": {
+    "employeeMin": null,
+    "employerMin": null,
+    "severanceMin": null
+  },
+  "studyFundCeilingMonthly": null
+}

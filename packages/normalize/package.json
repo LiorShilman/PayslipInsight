@@ -1,0 +1,21 @@
+{
+  "name": "@payslip-insight/normalize",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.100",
+    "pdfjs-dist": "^5.6.205",
+    "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,1018 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`payslipJsonSchema > stays stable (SPEC.md §13.2 — snapshot the derived JSON Schema) 1`] = `
+{
+  "$ref": "#/definitions/Payslip",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Money": {
+      "description": "amount in agorot (1/100 ILS)",
+      "type": "integer",
+    },
+    "Payslip": {
+      "additionalProperties": false,
+      "properties": {
+        "attendance": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "absenceDays": {
+                  "type": [
+                    "number",
+                    "null",
+                  ],
+                },
+                "actualHours": {
+                  "type": [
+                    "number",
+                    "null",
+                  ],
+                },
+                "actualWorkDays": {
+                  "type": [
+                    "number",
+                    "null",
+                  ],
+                },
+                "standardHours": {
+                  "type": [
+                    "number",
+                    "null",
+                  ],
+                },
+                "workDaysInMonth": {
+                  "type": [
+                    "number",
+                    "null",
+                  ],
+                },
+              },
+              "required": [
+                "workDaysInMonth",
+                "actualWorkDays",
+                "standardHours",
+                "actualHours",
+                "absenceDays",
+              ],
+              "type": "object",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "balances": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "accrued": {
+                "type": [
+                  "number",
+                  "null",
+                ],
+              },
+              "closingBalance": {
+                "type": [
+                  "number",
+                  "null",
+                ],
+              },
+              "openingBalance": {
+                "type": [
+                  "number",
+                  "null",
+                ],
+              },
+              "prov": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Payslip/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+              },
+              "type": {
+                "enum": [
+                  "vacation",
+                  "sick",
+                  "recuperation",
+                ],
+                "type": "string",
+              },
+              "used": {
+                "type": [
+                  "number",
+                  "null",
+                ],
+              },
+            },
+            "required": [
+              "type",
+              "openingBalance",
+              "accrued",
+              "used",
+              "closingBalance",
+              "prov",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "employee": {
+          "additionalProperties": false,
+          "properties": {
+            "department": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "employeeNumber": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "employmentScope": {
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+            "fullName": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "bbox": {
+                              "items": [
+                                {
+                                  "type": "number",
+                                },
+                                {
+                                  "type": "number",
+                                },
+                                {
+                                  "type": "number",
+                                },
+                                {
+                                  "type": "number",
+                                },
+                              ],
+                              "maxItems": 4,
+                              "minItems": 4,
+                              "type": "array",
+                            },
+                            "confidence": {
+                              "maximum": 1,
+                              "minimum": 0,
+                              "type": "number",
+                            },
+                            "page": {
+                              "minimum": 0,
+                              "type": "integer",
+                            },
+                            "rawText": {
+                              "type": "string",
+                            },
+                          },
+                          "required": [
+                            "page",
+                            "bbox",
+                            "rawText",
+                            "confidence",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "grade": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "jobTitle": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "nationalIdLast4": {
+              "anyOf": [
+                {
+                  "maxLength": 4,
+                  "minLength": 4,
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "seniorityMonths": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "startDate": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+          },
+          "required": [
+            "fullName",
+            "nationalIdLast4",
+            "employeeNumber",
+            "department",
+            "jobTitle",
+            "startDate",
+            "seniorityMonths",
+            "employmentScope",
+            "grade",
+          ],
+          "type": "object",
+        },
+        "employer": {
+          "additionalProperties": false,
+          "properties": {
+            "companyId": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "deductionsFileId": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "name": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+          },
+          "required": [
+            "name",
+            "companyId",
+            "deductionsFileId",
+          ],
+          "type": "object",
+        },
+        "extraction": {
+          "additionalProperties": false,
+          "properties": {
+            "attempts": {
+              "type": "integer",
+            },
+            "engine": {
+              "enum": [
+                "template",
+                "llm",
+                "template+llm",
+              ],
+              "type": "string",
+            },
+            "modelId": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "overallConfidence": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number",
+            },
+            "warnings": {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "required": [
+            "engine",
+            "modelId",
+            "attempts",
+            "overallConfidence",
+            "warnings",
+          ],
+          "type": "object",
+        },
+        "lineItems": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "amount": {
+                "$ref": "#/definitions/Money",
+              },
+              "category": {
+                "enum": [
+                  "base_salary",
+                  "overtime",
+                  "global_overtime",
+                  "bonus",
+                  "commission",
+                  "travel_allowance",
+                  "recuperation_pay",
+                  "clothing_allowance",
+                  "sick_pay",
+                  "vacation_pay",
+                  "holiday_gift",
+                  "seniority_increment",
+                  "shift_differential",
+                  "standby_pay",
+                  "meal_allowance",
+                  "retro_adjustment",
+                  "expense_reimbursement",
+                  "benefit_in_kind",
+                  "other_payment",
+                  "income_tax",
+                  "national_insurance",
+                  "health_tax",
+                  "tax_credit_refund",
+                  "pension_employee",
+                  "study_fund_employee",
+                  "manager_insurance_employee",
+                  "disability_insurance",
+                  "union_dues",
+                  "loan_repayment",
+                  "garnishment",
+                  "charity",
+                  "other_deduction",
+                  "pension_employer",
+                  "severance_employer",
+                  "study_fund_employer",
+                  "national_insurance_employer",
+                  "manager_insurance_employer",
+                  "other_employer_contribution",
+                ],
+                "type": "string",
+              },
+              "code": {
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "label": {
+                "type": "string",
+              },
+              "prov": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Payslip/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+              },
+              "quantity": {
+                "type": [
+                  "number",
+                  "null",
+                ],
+              },
+              "quantityUnit": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "hours",
+                      "days",
+                      "units",
+                      "percent",
+                    ],
+                    "type": "string",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+              },
+              "rate": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Money",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+                "description": "amount in agorot (1/100 ILS)",
+              },
+              "section": {
+                "enum": [
+                  "payment",
+                  "mandatory_deduction",
+                  "voluntary_deduction",
+                  "employer_contribution",
+                ],
+                "type": "string",
+              },
+              "taxable": {
+                "type": [
+                  "boolean",
+                  "null",
+                ],
+              },
+              "yearToDate": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Money",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+                "description": "amount in agorot (1/100 ILS)",
+              },
+            },
+            "required": [
+              "label",
+              "code",
+              "category",
+              "section",
+              "quantity",
+              "quantityUnit",
+              "rate",
+              "amount",
+              "yearToDate",
+              "taxable",
+              "prov",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "meta": {
+          "additionalProperties": false,
+          "properties": {
+            "currency": {
+              "const": "ILS",
+              "type": "string",
+            },
+            "docType": {
+              "const": "payslip",
+              "type": "string",
+            },
+            "payDate": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "payrollProvider": {
+              "type": "string",
+            },
+            "period": {
+              "additionalProperties": false,
+              "properties": {
+                "month": {
+                  "maximum": 12,
+                  "minimum": 1,
+                  "type": "integer",
+                },
+                "year": {
+                  "type": "integer",
+                },
+              },
+              "required": [
+                "year",
+                "month",
+              ],
+              "type": "object",
+            },
+          },
+          "required": [
+            "docType",
+            "payrollProvider",
+            "period",
+            "payDate",
+            "currency",
+          ],
+          "type": "object",
+        },
+        "payment": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "accountLast4": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+                "bankName": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+                "method": {
+                  "enum": [
+                    "bank_transfer",
+                    "check",
+                    "cash",
+                    "unknown",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "method",
+                "bankName",
+                "accountLast4",
+              ],
+              "type": "object",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "schemaVersion": {
+          "const": "1.0",
+          "type": "string",
+        },
+        "taxProfile": {
+          "additionalProperties": false,
+          "properties": {
+            "additionalIncome": {
+              "type": [
+                "boolean",
+                "null",
+              ],
+            },
+            "creditPoints": {
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+            "maritalStatus": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "residentOfDevelopmentArea": {
+              "type": [
+                "boolean",
+                "null",
+              ],
+            },
+            "taxCoordination": {
+              "type": [
+                "boolean",
+                "null",
+              ],
+            },
+          },
+          "required": [
+            "creditPoints",
+            "maritalStatus",
+            "taxCoordination",
+            "additionalIncome",
+            "residentOfDevelopmentArea",
+          ],
+          "type": "object",
+        },
+        "totals": {
+          "additionalProperties": false,
+          "properties": {
+            "grossPay": {
+              "additionalProperties": false,
+              "properties": {
+                "prov": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/Payslip/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                },
+                "value": {
+                  "$ref": "#/definitions/Money",
+                },
+              },
+              "required": [
+                "value",
+                "prov",
+              ],
+              "type": "object",
+            },
+            "netPay": {
+              "additionalProperties": false,
+              "properties": {
+                "prov": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/Payslip/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                },
+                "value": {
+                  "$ref": "#/definitions/Money",
+                },
+              },
+              "required": [
+                "value",
+                "prov",
+              ],
+              "type": "object",
+            },
+            "niBase": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/Payslip/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "pensionBase": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/Payslip/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "taxableIncome": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/Payslip/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "totalDeductions": {
+              "additionalProperties": false,
+              "properties": {
+                "prov": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/Payslip/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                },
+                "value": {
+                  "$ref": "#/definitions/Money",
+                },
+              },
+              "required": [
+                "value",
+                "prov",
+              ],
+              "type": "object",
+            },
+            "totalEmployerContributions": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/Payslip/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "totalMandatoryDeductions": {
+              "additionalProperties": false,
+              "properties": {
+                "prov": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/Payslip/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                },
+                "value": {
+                  "$ref": "#/definitions/Money",
+                },
+              },
+              "required": [
+                "value",
+                "prov",
+              ],
+              "type": "object",
+            },
+            "totalVoluntaryDeductions": {
+              "additionalProperties": false,
+              "properties": {
+                "prov": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/Payslip/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                },
+                "value": {
+                  "$ref": "#/definitions/Money",
+                },
+              },
+              "required": [
+                "value",
+                "prov",
+              ],
+              "type": "object",
+            },
+          },
+          "required": [
+            "grossPay",
+            "taxableIncome",
+            "niBase",
+            "pensionBase",
+            "totalMandatoryDeductions",
+            "totalVoluntaryDeductions",
+            "totalDeductions",
+            "netPay",
+            "totalEmployerContributions",
+          ],
+          "type": "object",
+        },
+        "yearToDate": {
+          "additionalProperties": false,
+          "properties": {
+            "grossPay": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Money",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+              "description": "amount in agorot (1/100 ILS)",
+            },
+            "healthTax": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Money",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+              "description": "amount in agorot (1/100 ILS)",
+            },
+            "incomeTax": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Money",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+              "description": "amount in agorot (1/100 ILS)",
+            },
+            "nationalInsurance": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Money",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+              "description": "amount in agorot (1/100 ILS)",
+            },
+            "pensionEmployee": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Money",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+              "description": "amount in agorot (1/100 ILS)",
+            },
+            "pensionEmployer": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Money",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+              "description": "amount in agorot (1/100 ILS)",
+            },
+            "severance": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Money",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+              "description": "amount in agorot (1/100 ILS)",
+            },
+            "studyFundEmployee": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Money",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+              "description": "amount in agorot (1/100 ILS)",
+            },
+            "studyFundEmployer": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Money",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+              "description": "amount in agorot (1/100 ILS)",
+            },
+            "taxableIncome": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Money",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+              "description": "amount in agorot (1/100 ILS)",
+            },
+          },
+          "required": [
+            "grossPay",
+            "taxableIncome",
+            "incomeTax",
+            "nationalInsurance",
+            "healthTax",
+            "pensionEmployee",
+            "pensionEmployer",
+            "severance",
+            "studyFundEmployee",
+            "studyFundEmployer",
+          ],
+          "type": "object",
+        },
+      },
+      "required": [
+        "schemaVersion",
+        "meta",
+        "employee",
+        "employer",
+        "taxProfile",
+        "lineItems",
+        "totals",
+        "yearToDate",
+        "balances",
+        "attendance",
+        "payment",
+        "extraction",
+      ],
+      "type": "object",
+    },
+  },
+}
+`;

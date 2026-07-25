@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+.next/
+*.log
+.env
+.env.*
+.DS_Store
+*.tsbuildinfo
+
+# פלט מחולל graphify — נתון-נגזר (regenerable), לא נשמר ברפו.
+graphify-out/

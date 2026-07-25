@@ -1,0 +1,52 @@
+@import 'tailwindcss';
+
+/**
+ * כיוון עיצובי: "מסמך רשמי מודפס" — לא dashboard SaaS גנרי. פלטה חמה
+ * לא-קרמית, "דיו" כהה, אקסנט ירוק-אזמרגד יחיד ("חותמת רשמית"), כרטיסים
+ * במסגרת דקה במקום צל. ראה SPEC.md §8.5.
+ */
+@theme {
+  --color-paper: #f4f2ed;
+  --color-ink: #1c2530;
+  --color-ink-muted: #8a8578;
+  --color-accent: #0f6d5c;
+  --color-accent-soft: #e4efec;
+  --color-accent-alert: #b3261e;
+  --color-accent-alert-soft: #f6e6e4;
+  --color-surface: #ffffff;
+}
+
+/* font-display / font-body ממופים ל-CSS vars שנקבעים ב-layout.tsx דרך next/font */
+@theme inline {
+  --font-display: var(--font-frank-ruhl);
+  --font-body: var(--font-heebo);
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.sr-only-table {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
