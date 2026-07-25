@@ -8,7 +8,7 @@ import type { Payslip } from '@payslip-insight/schema';
 import { useProvenance } from '@/lib/provenance-context';
 
 const HEIGHT = 340;
-const MARGIN = { top: 16, right: 12, bottom: 92, left: 12 };
+const MARGIN = { top: 28, right: 12, bottom: 92, left: 12 };
 
 type Props = {
   payslip: Payslip;
@@ -105,14 +105,19 @@ export function GrossToNetWaterfall({ payslip, waterfall }: Props) {
                 >
                   <tspan direction="ltr">{formatILS(step.amount)}</tspan>
                 </text>
+                {/* עוגן+בייסליין נבחרו כך שכל תיבת הטקסט (RTL) יושבת ברביע
+                    ימין-מטה יחסית לנקודת הציר לפני הסיבוב — כך שאחרי rotate(-35)
+                    היא לא יכולה לחצות בחזרה מעל ציר ה-0 (היה קורה עם textAnchor
+                    'middle' + baseline דיפולטיבי, שמותח טקסט גם מעל נקודת העיגון). */}
                 <text
                   x={barX + barWidth / 2}
-                  y={innerHeight + 20}
-                  textAnchor="middle"
+                  y={innerHeight + 10}
+                  textAnchor="start"
+                  dominantBaseline="hanging"
                   fontSize={11}
                   fontFamily="var(--font-body)"
                   fill="var(--color-ink-muted)"
-                  transform={`rotate(-35, ${barX + barWidth / 2}, ${innerHeight + 20})`}
+                  transform={`rotate(-35, ${barX + barWidth / 2}, ${innerHeight + 10})`}
                 >
                   {step.label}
                 </text>

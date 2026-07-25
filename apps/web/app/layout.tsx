@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="he" dir="rtl" className={`${frankRuhlLibre.variable} ${heebo.variable}`}>
-      <body>{children}</body>
+    <html lang="he" dir="rtl" className={`${frankRuhlLibre.variable} ${heebo.variable}`} suppressHydrationWarning>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }

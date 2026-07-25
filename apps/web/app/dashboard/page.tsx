@@ -85,7 +85,7 @@ export default function DashboardPage() {
               <Card>
                 <CardTitle>איך הכסף זורם</CardTitle>
                 <p className="mt-1 text-sm text-ink-muted">מהברוטו שלך, לכל יעד — ניכויים ונטו לתשלום.</p>
-                <div className="mt-4">
+                <div className="mt-6">
                   <MoneyFlowSankey payslip={payslip} />
                 </div>
               </Card>
@@ -109,7 +109,7 @@ export default function DashboardPage() {
             <motion.div custom={2} initial="hidden" animate="show" variants={reveal}>
               <Card>
                 <CardTitle>ברוטו → נטו, צעד אחר צעד</CardTitle>
-                <div className="mt-4">
+                <div className="mt-6">
                   <GrossToNetWaterfall payslip={payslip} waterfall={derived.waterfall} />
                 </div>
               </Card>

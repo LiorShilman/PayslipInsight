@@ -37,7 +37,7 @@ export function EmployerCostCard({ derived, grossPay, netPay }: Props) {
         לעומת מה שנכנס בפועל לחשבון שלך — כולל כל מה שהמעסיק מפריש מעליך.
       </p>
 
-      <div className="mt-5 flex flex-col gap-3">
+      <div className="mt-6 flex flex-col gap-3">
         {rows.map((row) => (
           <div key={row.label}>
             <div className="mb-1 flex items-baseline justify-between text-sm">

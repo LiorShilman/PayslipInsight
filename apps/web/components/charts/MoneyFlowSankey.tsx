@@ -8,7 +8,7 @@ import { useProvenance } from '@/lib/provenance-context';
 
 const WIDTH = 680;
 const NODE_WIDTH = 14;
-const MARGIN = { top: 10, bottom: 10, sourceSide: 90, targetSide: 210 };
+const MARGIN = { top: 18, bottom: 10, sourceSide: 90, targetSide: 210 };
 
 type NodeKind = 'source' | 'mandatory' | 'voluntary' | 'net';
 
@@ -137,11 +137,14 @@ export function MoneyFlowSankey({ payslip }: Props) {
               >
                 <title>{node.name}</title>
               </rect>
+              {/* text-anchor הוא כיווני: לטקסט RTL, 'end' מעגן את הקצה השמאלי ומותח
+                  ימינה (לתוך הצומת), ו-'start' מעגן את הקצה הימני ומותח שמאלה
+                  (לתוך הצומת) — ההפך ממה שאינטואיטיבית מצפים. לכן מתחלף כאן. */}
               <text
                 x={isSource ? x1 + 10 : x0 - 10}
                 y={midY}
                 dominantBaseline="middle"
-                textAnchor={isSource ? 'start' : 'end'}
+                textAnchor={isSource ? 'end' : 'start'}
                 fontSize={12.5}
                 fontWeight={isSource ? 700 : 500}
                 fontFamily="var(--font-body)"

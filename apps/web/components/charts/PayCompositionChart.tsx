@@ -30,7 +30,7 @@ export function PayCompositionChart({ payDistribution }: { payDistribution: Deri
       <CardTitle>הרכב השכר</CardTitle>
       <p className="mt-1 text-sm text-ink-muted">מה בברוטו שלך צפוי ויציב, ומה משתנה או לא נכנס בפועל לחשבון.</p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-6">
+      <div className="mt-6 flex flex-wrap items-center gap-6">
         <svg width={SIZE} height={SIZE} role="img" aria-label="גרף הרכב השכר">
           <Group top={RADIUS} left={RADIUS}>
             <Pie

@@ -42,7 +42,7 @@ export function LineItemsTable({ lineItems }: Props) {
     <Card>
       <CardTitle>כל השורות</CardTitle>
 
-      <div className="mt-4 grid grid-cols-[minmax(0,1fr)_minmax(60px,2fr)_auto] items-center gap-x-3 gap-y-1.5">
+      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_minmax(60px,2fr)_auto] items-center gap-x-3 gap-y-1.5">
         {sections.map(({ section, rows }) => {
           const maxAmount = Math.max(...rows.map((r) => r.amount), 1);
           const color = SECTION_COLOR[section];
