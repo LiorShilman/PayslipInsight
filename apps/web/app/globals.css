@@ -15,6 +15,10 @@
   --color-accent-alert-soft: #f6e6e4;
   --color-amber: #b8862c;
   --color-amber-soft: #f3ead9;
+  /* צבע ייעודי ל"ערך שהמעסיק מפריש" (הפרשות/פנסיה/קה"ל מעסיק) — שונה
+     מ-accent (נטו/"כסף בבנק") כדי שיהיה אפשר להבדיל ביניהם באותו גרף. */
+  --color-info: #2f6f8f;
+  --color-info-soft: #e5eef1;
   --color-surface: #ffffff;
 }
 
@@ -38,6 +42,15 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* בלי זה, רוב הדפדפנים משמיטים צבעי רקע/מסגרת בהדפסה כברירת מחדל,
+   וה"הדפסה / שמירה כ-PDF" בדשבורד תצא כמעט אפורה. */
+@media print {
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 }
 

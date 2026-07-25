@@ -14,6 +14,8 @@ export type WaterfallStep = {
   cumulativeAfter: Money;
 };
 
+export type RetirementFund = 'pension' | 'severance' | 'studyFund' | 'managerInsurance';
+
 export type DerivedMetrics = {
   employerTotalCost: Money;
   takeHomeRatio: number | null;
@@ -40,6 +42,20 @@ export type DerivedMetrics = {
     reimbursement: Money;
     benefitInKind: Money;
   };
+  /**
+   * "הנטו האמיתי": מה שנכנס לבנק זה לא כל הערך שנוצר החודש — חיסכון
+   * ארוך-טווח (פנסיה/קה"ל/ביטוח מנהלים, גם צד עובד וגם צד מעסיק) הוא ערך
+   * אמיתי שפשוט לא נזיל היום. אין כאן ניחוש: כל שדה הוא סכימה ישירה של
+   * amount לפי category, בלי חישובי ריבית/תשואה עתידיים.
+   */
+  trueNet: {
+    bankNet: Money;
+    employeeSavings: Money;
+    employerSavings: Money;
+    total: Money;
+  };
+  /** פירוט לפי קרן: תגמולי עובד מול תגמולי מעסיק, לכל אחד מסוגי החיסכון. */
+  retirementBreakdown: { fund: RetirementFund; employee: Money; employer: Money }[];
 };
 
 function amountByCategory(lineItems: readonly LineItem[], category: LineItemCategory): number {
@@ -128,6 +144,41 @@ function computePayDistribution(p: Payslip): DerivedMetrics['payDistribution'] {
   return { fixed, variable, reimbursement, benefitInKind };
 }
 
+const RETIREMENT_FUND_CATEGORIES: Record<
+  RetirementFund,
+  { employee: LineItemCategory | null; employer: LineItemCategory | null }
+> = {
+  pension: { employee: 'pension_employee', employer: 'pension_employer' },
+  severance: { employee: null, employer: 'severance_employer' },
+  studyFund: { employee: 'study_fund_employee', employer: 'study_fund_employer' },
+  managerInsurance: { employee: 'manager_insurance_employee', employer: 'manager_insurance_employer' },
+};
+
+function computeRetirementBreakdown(p: Payslip): DerivedMetrics['retirementBreakdown'] {
+  return (Object.keys(RETIREMENT_FUND_CATEGORIES) as RetirementFund[])
+    .map((fund) => {
+      const { employee: employeeCategory, employer: employerCategory } = RETIREMENT_FUND_CATEGORIES[fund];
+      const employee = employeeCategory ? amountByCategory(p.lineItems, employeeCategory) : 0;
+      const employer = employerCategory ? amountByCategory(p.lineItems, employerCategory) : 0;
+      return { fund, employee, employer };
+    })
+    .filter((row) => row.employee > 0 || row.employer > 0);
+}
+
+function computeTrueNet(p: Payslip): DerivedMetrics['trueNet'] {
+  const bankNet = p.totals.netPay.value;
+  const employeeSavings =
+    amountByCategory(p.lineItems, 'pension_employee') +
+    amountByCategory(p.lineItems, 'study_fund_employee') +
+    amountByCategory(p.lineItems, 'manager_insurance_employee');
+  const employerSavings =
+    amountByCategory(p.lineItems, 'pension_employer') +
+    amountByCategory(p.lineItems, 'severance_employer') +
+    amountByCategory(p.lineItems, 'study_fund_employer') +
+    amountByCategory(p.lineItems, 'manager_insurance_employer');
+  return { bankNet, employeeSavings, employerSavings, total: bankNet + employeeSavings + employerSavings };
+}
+
 function computeCostOfNextShekel(p: Payslip, params: TaxParams): number | null {
   const taxableIncome = p.totals.taxableIncome?.value;
   if (taxableIncome === undefined || taxableIncome === null) return null;
@@ -183,5 +234,7 @@ export function deriveMetrics(p: Payslip, params: TaxParams | null): DerivedMetr
     creditPointsSavings,
     waterfall: buildWaterfall(p),
     payDistribution: computePayDistribution(p),
+    trueNet: computeTrueNet(p),
+    retirementBreakdown: computeRetirementBreakdown(p),
   };
 }

@@ -45,7 +45,27 @@ function stripCodeFence(text: string): string {
 export type ExtractOptions = {
   /** הוראות נוספות שמוזרקות לפרומפט (למשל שגיאות ולידציה מניסיון קודם — §5.5). */
   extraInstructions?: string;
+  /** נקרא עם התווית (label) של כל שורה ברגע שה-JSON שלה הושלם בסטרים — התקדמות אמיתית, לא מדומה. */
+  onLabel?: (label: string) => void;
 };
+
+/**
+ * סורק את ה-snapshot המצטבר של הסטרים אחרי כל delta ומחלץ את כל ה-"label"
+ * שכבר הושלמו (מחרוזת סגורה במרכאות). ה-JSON נבנה שמאל-לימין ותוסף בלבד,
+ * אז אפשר להשוות לכמות שכבר דווחה ולשלוח רק את החדשים — בלי parser JSON
+ * חלקי מלא.
+ */
+function extractNewLabels(snapshot: string, alreadyReported: number): { labels: string[]; total: number } {
+  const matches = [...snapshot.matchAll(/"label"\s*:\s*"((?:\\.|[^"\\])*)"/g)];
+  const newOnes = matches.slice(alreadyReported).map((m) => {
+    try {
+      return JSON.parse(`"${m[1]}"`) as string;
+    } catch {
+      return m[1] ?? '';
+    }
+  });
+  return { labels: newOnes, total: matches.length };
+}
 
 /**
  * שלב 4 בצינור העיבוד (SPEC.md §5): שולח את תמונות העמודים + רמז טקסטואלי
@@ -85,6 +105,16 @@ export async function extractPayslip(doc: NormalizedDoc, opts: ExtractOptions = 
       },
     ],
   });
+
+  if (opts.onLabel) {
+    let reportedCount = 0;
+    stream.on('text', (_delta, snapshot) => {
+      const { labels, total } = extractNewLabels(snapshot, reportedCount);
+      reportedCount = total;
+      for (const label of labels) opts.onLabel!(label);
+    });
+  }
+
   const response = await stream.finalMessage();
 
   if (response.stop_reason === 'max_tokens') {

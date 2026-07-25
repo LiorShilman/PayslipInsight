@@ -42,15 +42,32 @@ export function LineItemsTable({ lineItems }: Props) {
     <Card>
       <CardTitle>כל השורות</CardTitle>
 
-      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_minmax(60px,2fr)_auto] items-center gap-x-3 gap-y-1.5">
+      {/* כל סקציה מקבלת "קופסה" צבעונית משלה (רקע+מסגרת בגוון הסקציה) כדי
+          שההפרדה תהיה ברורה מעבר לצבע הבר בלבד — עדיין subgrid יחיד כדי
+          שהעמודות יישארו מיושרות בין סקציות (ריפוד אחיד לכל הקופסאות). */}
+      <div className="mt-6 grid grid-cols-[minmax(0,1fr)_minmax(60px,2fr)_auto] gap-y-4">
         {sections.map(({ section, rows }) => {
           const maxAmount = Math.max(...rows.map((r) => r.amount), 1);
+          const subtotal = rows.reduce((total, r) => total + r.amount, 0);
           const color = SECTION_COLOR[section];
 
           return (
-            <div key={section} className="col-span-3 grid grid-cols-subgrid gap-x-3 gap-y-1.5">
-              <h4 className="col-span-3 mt-4 text-sm font-semibold text-ink-muted first:mt-0">
-                {SECTION_LABELS[section]}
+            <div
+              key={section}
+              className="col-span-3 grid grid-cols-subgrid items-center gap-x-3 gap-y-1.5 rounded-lg border p-3"
+              style={{
+                borderColor: `color-mix(in srgb, ${color} 22%, transparent)`,
+                backgroundColor: `color-mix(in srgb, ${color} 5%, transparent)`,
+              }}
+            >
+              <h4 className="col-span-3 flex items-baseline justify-between gap-3 text-sm font-semibold">
+                <span className="flex items-center gap-2" style={{ color }}>
+                  <span className="inline-block h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: color }} aria-hidden />
+                  {SECTION_LABELS[section]}
+                </span>
+                <span dir="ltr" className="text-xs font-medium text-ink-muted">
+                  סה&quot;כ {formatILS(subtotal)}
+                </span>
               </h4>
               {rows.map((item, index) => (
                 <button

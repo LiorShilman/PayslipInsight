@@ -27,7 +27,7 @@ export function DocumentViewer({ pages }: Props) {
       <div className="flex items-center justify-between">
         <CardTitle>המסמך המקורי</CardTitle>
         {pages.length > 1 && (
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-2 text-sm print:hidden">
             <button
               type="button"
               disabled={pageIndex === 0}

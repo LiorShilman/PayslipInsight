@@ -3,10 +3,10 @@
 import { FileText, Lock, ShieldCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
-import { ProcessingStages } from '@/components/ProcessingStages';
+import { ProcessingStages, type Stage } from '@/components/ProcessingStages';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import type { ApiError, ExtractionResult } from '@/lib/types';
+import type { ApiError } from '@/lib/types';
 
 type Status = 'idle' | 'processing' | 'needs_password' | 'error';
 
@@ -17,10 +17,14 @@ export default function UploadPage() {
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [stage, setStage] = useState<Stage>('reading');
+  const [labels, setLabels] = useState<string[]>([]);
 
   async function submit(file: File, passwordValue?: string) {
     setStatus('processing');
     setErrorMessage(null);
+    setStage('reading');
+    setLabels([]);
 
     const formData = new FormData();
     formData.append('file', file);
@@ -28,10 +32,11 @@ export default function UploadPage() {
 
     try {
       const response = await fetch('/api/documents', { method: 'POST', body: formData });
-      const json: unknown = await response.json();
 
-      if (!response.ok) {
-        const apiError = json as ApiError;
+      // תגובה שלא-SSE מגיעה רק משגיאות לפני שהחילוץ התחיל (סיסמה, קובץ לא תקין) —
+      // ראה app/api/documents/route.ts. מ-extract ואילך זה תמיד text/event-stream.
+      if (!(response.headers.get('content-type') ?? '').includes('text/event-stream')) {
+        const apiError = (await response.json()) as ApiError;
         if (apiError.error.code === 'PASSWORD_REQUIRED' || apiError.error.code === 'WRONG_PASSWORD') {
           setPendingFile(file);
           setStatus('needs_password');
@@ -43,9 +48,40 @@ export default function UploadPage() {
         return;
       }
 
-      const result = json as ExtractionResult;
-      sessionStorage.setItem('payslip-insight:result', JSON.stringify(result));
-      router.push('/dashboard');
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('no response body');
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const events = buffer.split('\n\n');
+        buffer = events.pop() ?? '';
+
+        for (const raw of events) {
+          const eventName = raw.match(/^event: (.+)$/m)?.[1];
+          const dataRaw = raw.match(/^data: (.+)$/m)?.[1];
+          if (!eventName || !dataRaw) continue;
+          const data = JSON.parse(dataRaw);
+
+          if (eventName === 'stage') {
+            setStage(data.stage as Stage);
+          } else if (eventName === 'progress') {
+            setLabels((prev) => [...prev, data.label as string]);
+          } else if (eventName === 'done') {
+            sessionStorage.setItem('payslip-insight:result', JSON.stringify(data));
+            router.push('/dashboard');
+            return;
+          } else if (eventName === 'error') {
+            setErrorMessage(data.messageHe as string);
+            setStatus('error');
+            return;
+          }
+        }
+      }
     } catch {
       setErrorMessage('שגיאת תקשורת. יש לבדוק את החיבור ולנסות שוב.');
       setStatus('error');
@@ -60,7 +96,7 @@ export default function UploadPage() {
   if (status === 'processing') {
     return (
       <main className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-6">
-        <ProcessingStages />
+        <ProcessingStages stage={stage} labels={labels} />
       </main>
     );
   }

@@ -9,11 +9,19 @@ export type ExtractWithRetryResult = {
   attempts: number;
 };
 
+export type ExtractWithRetryOptions = {
+  /** נקרא עם התווית של כל שורה ברגע שהיא הושלמה בסטרים, בכל ניסיון. */
+  onLabel?: (label: string) => void;
+};
+
 /** SPEC.md §5.5, גרסה מצומצמת: ניסיון 1, ואם ולידציה חוסמת נכשלה — ניסיון 2 עם הזרקת השגיאות. */
 const MAX_ATTEMPTS = 2;
 
-export async function extractWithRetry(doc: NormalizedDoc): Promise<ExtractWithRetryResult> {
-  let payslip = await extractPayslip(doc);
+export async function extractWithRetry(
+  doc: NormalizedDoc,
+  opts: ExtractWithRetryOptions = {},
+): Promise<ExtractWithRetryResult> {
+  let payslip = await extractPayslip(doc, { onLabel: opts.onLabel });
   let validation = validatePayslip(payslip);
   let attempts = 1;
 
@@ -25,6 +33,7 @@ export async function extractWithRetry(doc: NormalizedDoc): Promise<ExtractWithR
 
     payslip = await extractPayslip(doc, {
       extraInstructions: `בניסיון הקודם הולידציה האריתמטית נכשלה בחוקים הבאים. בדוק שוב את המספרים הרלוונטיים בתמונה ותקן:\n${errorSummary}`,
+      onLabel: opts.onLabel,
     });
     validation = validatePayslip(payslip);
     attempts = 2;

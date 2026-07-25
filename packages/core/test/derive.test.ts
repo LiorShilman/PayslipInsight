@@ -244,6 +244,53 @@ describe('deriveMetrics', () => {
     expect(derived.costOfNextShekel).toBeNull();
   });
 
+  it('computes trueNet as bankNet + employee long-term savings + employer contributions', () => {
+    const derived = deriveMetrics(fixturePayslip(), null);
+    // fixture: pension_employee 60,000; pension_employer 65,000; severance_employer 83,000
+    expect(derived.trueNet).toEqual({
+      bankNet: 880_000,
+      employeeSavings: 60_000,
+      employerSavings: 148_000,
+      total: 1_088_000,
+    });
+  });
+
+  it('excludes non-savings voluntary deductions and employer contributions from trueNet', () => {
+    const p = fixturePayslip();
+    p.lineItems.push(
+      line({ label: 'ועד עובדים', category: 'union_dues', section: 'voluntary_deduction', amount: 15_000 }),
+      line({
+        label: 'ביטוח לאומי מעסיק',
+        category: 'national_insurance_employer',
+        section: 'employer_contribution',
+        amount: 40_000,
+      }),
+    );
+    const derived = deriveMetrics(p, null);
+    expect(derived.trueNet.employeeSavings).toBe(60_000); // union_dues not counted
+    expect(derived.trueNet.employerSavings).toBe(148_000); // national_insurance_employer not counted
+  });
+
+  it('builds a retirementBreakdown per fund, omitting funds with no employee or employer amount', () => {
+    const derived = deriveMetrics(fixturePayslip(), null);
+    // fixture only has pension (employee+employer) and severance (employer only)
+    expect(derived.retirementBreakdown).toEqual([
+      { fund: 'pension', employee: 60_000, employer: 65_000 },
+      { fund: 'severance', employee: 0, employer: 83_000 },
+    ]);
+  });
+
+  it('includes studyFund and managerInsurance in retirementBreakdown when present', () => {
+    const p = fixturePayslip();
+    p.lineItems.push(
+      line({ label: 'קרן השתלמות עובד', category: 'study_fund_employee', section: 'voluntary_deduction', amount: 20_000 }),
+      line({ label: 'קה"ל מעסיק', category: 'study_fund_employer', section: 'employer_contribution', amount: 25_000 }),
+    );
+    const derived = deriveMetrics(p, null);
+    const studyFund = derived.retirementBreakdown.find((r) => r.fund === 'studyFund');
+    expect(studyFund).toEqual({ fund: 'studyFund', employee: 20_000, employer: 25_000 });
+  });
+
   it('does not throw and returns 0-valued metrics for an all-zero payslip', () => {
     const p = fixturePayslip();
     p.lineItems = [];
@@ -262,5 +309,7 @@ describe('deriveMetrics', () => {
     expect(derived.takeHomeRatio).toBeNull(); // 0/0 guarded, not NaN
     expect(derived.effectiveTotalDeductionRate).toBeNull();
     expect(derived.waterfall).toHaveLength(2); // just start + end
+    expect(derived.trueNet).toEqual({ bankNet: 0, employeeSavings: 0, employerSavings: 0, total: 0 });
+    expect(derived.retirementBreakdown).toEqual([]);
   });
 });
