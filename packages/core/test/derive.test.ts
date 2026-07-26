@@ -291,6 +291,30 @@ describe('deriveMetrics', () => {
     expect(studyFund).toEqual({ fund: 'studyFund', employee: 20_000, employer: 25_000 });
   });
 
+  it('returns empty yearToDateComparison when no yearToDate fields were extracted', () => {
+    const derived = deriveMetrics(fixturePayslip(), null);
+    expect(derived.yearToDateComparison).toEqual([]);
+  });
+
+  it('computes yearToDateComparison only for metrics with an extracted yearToDate value', () => {
+    const p = fixturePayslip(); // period.month = 3, grossPay = 1,200,000
+    p.yearToDate.grossPay = 3_000_000; // ytdAverage = 1,000,000
+    p.yearToDate.incomeTax = 450_000; // ytdAverage = 150,000, matches this month's income_tax line
+    const derived = deriveMetrics(p, null);
+    expect(derived.yearToDateComparison).toEqual([
+      { metric: 'grossPay', thisMonth: 1_200_000, ytdAverage: 1_000_000 },
+      { metric: 'incomeTax', thisMonth: 150_000, ytdAverage: 150_000 },
+    ]);
+  });
+
+  it('rounds ytdAverage when yearToDate does not divide evenly by the month number', () => {
+    const p = fixturePayslip();
+    p.meta.period.month = 4;
+    p.yearToDate.grossPay = 5_000_001; // /4 = 1,250,000.25
+    const derived = deriveMetrics(p, null);
+    expect(derived.yearToDateComparison[0]).toEqual({ metric: 'grossPay', thisMonth: 1_200_000, ytdAverage: 1_250_000 });
+  });
+
   it('does not throw and returns 0-valued metrics for an all-zero payslip', () => {
     const p = fixturePayslip();
     p.lineItems = [];

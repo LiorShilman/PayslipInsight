@@ -48,8 +48,19 @@ export function GrossToNetWaterfall({ payslip, waterfall }: Props) {
 
   return (
     <div>
+      {/* על המסך: רוחב קבוע + גלילה אופקית (max-w-none), כדי שתוויות לא
+          יידחסו כשיש הרבה שורות. בהדפסה אין גלילה — כל מה שרוחב יותר
+          מעמוד הנייר פשוט נחתך — אז שם viewBox + print:!w-full מכווצים
+          את כל הגרף פנימה במקום לאבד את הקצה השמאלי. */}
       <div className="overflow-x-auto">
-      <svg width={width} height={HEIGHT} role="img" aria-labelledby="waterfall-title" className="max-w-none">
+      <svg
+        width={width}
+        height={HEIGHT}
+        viewBox={`0 0 ${width} ${HEIGHT}`}
+        role="img"
+        aria-labelledby="waterfall-title"
+        className="max-w-none print:!w-full print:!max-w-full print:!h-auto"
+      >
         <title id="waterfall-title">גרף ברוטו לנטו</title>
         <Group left={MARGIN.left} top={MARGIN.top}>
           <line x1={0} y1={innerHeight} x2={innerWidth} y2={innerHeight} stroke="var(--color-ink)" strokeOpacity={0.15} />

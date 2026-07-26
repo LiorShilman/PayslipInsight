@@ -56,7 +56,24 @@ export type DerivedMetrics = {
   };
   /** פירוט לפי קרן: תגמולי עובד מול תגמולי מעסיק, לכל אחד מסוגי החיסכון. */
   retirementBreakdown: { fund: RetirementFund; employee: Money; employer: Money }[];
+  /**
+   * "החודש הזה" מול הקצב הממוצע מתחילת השנה (yearToDate / חודש נוכחי).
+   * רק מדדים שיש להם גם ערך yearToDate וגם מקבילה בתלוש החודש הזה —
+   * שדה yearToDate שלא חולץ (null) פשוט לא מופיע כאן, בלי לנחש.
+   */
+  yearToDateComparison: { metric: YtdMetric; thisMonth: Money; ytdAverage: Money }[];
 };
+
+export type YtdMetric =
+  | 'grossPay'
+  | 'incomeTax'
+  | 'nationalInsurance'
+  | 'healthTax'
+  | 'pensionEmployee'
+  | 'pensionEmployer'
+  | 'severance'
+  | 'studyFundEmployee'
+  | 'studyFundEmployer';
 
 function amountByCategory(lineItems: readonly LineItem[], category: LineItemCategory): number {
   return sum(lineItems.filter((li) => li.category === category).map((li) => li.amount));
@@ -179,6 +196,36 @@ function computeTrueNet(p: Payslip): DerivedMetrics['trueNet'] {
   return { bankNet, employeeSavings, employerSavings, total: bankNet + employeeSavings + employerSavings };
 }
 
+const YTD_THIS_MONTH_SOURCE: Record<YtdMetric, (p: Payslip) => Money> = {
+  grossPay: (p) => p.totals.grossPay.value,
+  incomeTax: (p) => amountByCategory(p.lineItems, 'income_tax'),
+  nationalInsurance: (p) => amountByCategory(p.lineItems, 'national_insurance'),
+  healthTax: (p) => amountByCategory(p.lineItems, 'health_tax'),
+  pensionEmployee: (p) => amountByCategory(p.lineItems, 'pension_employee'),
+  pensionEmployer: (p) => amountByCategory(p.lineItems, 'pension_employer'),
+  severance: (p) => amountByCategory(p.lineItems, 'severance_employer'),
+  studyFundEmployee: (p) => amountByCategory(p.lineItems, 'study_fund_employee'),
+  studyFundEmployer: (p) => amountByCategory(p.lineItems, 'study_fund_employer'),
+};
+
+function computeYearToDateComparison(p: Payslip): DerivedMetrics['yearToDateComparison'] {
+  const month = p.meta.period.month;
+  if (month < 1) return [];
+
+  const metrics = Object.keys(YTD_THIS_MONTH_SOURCE) as YtdMetric[];
+  const rows: DerivedMetrics['yearToDateComparison'] = [];
+  for (const metric of metrics) {
+    const ytdValue = p.yearToDate[metric];
+    if (ytdValue === null) continue;
+    rows.push({
+      metric,
+      thisMonth: YTD_THIS_MONTH_SOURCE[metric](p),
+      ytdAverage: Math.round(ytdValue / month),
+    });
+  }
+  return rows;
+}
+
 function computeCostOfNextShekel(p: Payslip, params: TaxParams): number | null {
   const taxableIncome = p.totals.taxableIncome?.value;
   if (taxableIncome === undefined || taxableIncome === null) return null;
@@ -236,5 +283,6 @@ export function deriveMetrics(p: Payslip, params: TaxParams | null): DerivedMetr
     payDistribution: computePayDistribution(p),
     trueNet: computeTrueNet(p),
     retirementBreakdown: computeRetirementBreakdown(p),
+    yearToDateComparison: computeYearToDateComparison(p),
   };
 }

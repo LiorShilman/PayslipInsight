@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
 import { LineItemsTable } from '@/components/LineItemsTable';
 import { TrueNetCard } from '@/components/TrueNetCard';
+import { YtdComparisonCard } from '@/components/YtdComparisonCard';
 import { DocumentViewer } from '@/components/viewer/DocumentViewer';
 import { ProvenanceProvider } from '@/lib/provenance-context';
 import type { ExtractionResult } from '@/lib/types';
@@ -164,7 +165,16 @@ export default function DashboardPage() {
               </motion.div>
             )}
 
-            <motion.div custom={3} initial="hidden" animate="show" variants={reveal}>
+            {derived.yearToDateComparison.length > 0 && (
+              <motion.div custom={3} initial="hidden" animate="show" variants={reveal}>
+                <YtdComparisonCard
+                  yearToDateComparison={derived.yearToDateComparison}
+                  monthNumber={payslip.meta.period.month}
+                />
+              </motion.div>
+            )}
+
+            <motion.div custom={4} initial="hidden" animate="show" variants={reveal}>
               <Card>
                 <CardTitle>ברוטו → נטו, צעד אחר צעד</CardTitle>
                 <div className="mt-6">
@@ -173,7 +183,7 @@ export default function DashboardPage() {
               </Card>
             </motion.div>
 
-            <motion.div custom={4} initial="hidden" animate="show" variants={reveal}>
+            <motion.div custom={5} initial="hidden" animate="show" variants={reveal}>
               <LineItemsTable lineItems={payslip.lineItems} />
             </motion.div>
           </div>
