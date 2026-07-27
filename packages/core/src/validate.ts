@@ -31,7 +31,8 @@ function sumBySection(lineItems: readonly LineItem[], section: LineItemSection):
   return sum(lineItems.filter((li) => li.section === section).map((li) => li.amount));
 }
 
-function moneyResult(args: {
+/** משותף לכל סוגי המסמכים (ראה validate-form106.ts). */
+export function moneyResult(args: {
   rule: string;
   severity: Severity;
   expected: number;

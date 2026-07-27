@@ -20,3 +20,27 @@ export const Extracted = <T extends z.ZodTypeAny>(inner: T) =>
   z.object({ value: inner, prov: Provenance.nullable() });
 
 export type ExtractedValue<T> = { value: T; prov: Provenance | null };
+
+/** סוגי מסמכים נתמכים ע"י שלב ה-Classify. ראה SPEC.md §5.3 ל-enum המלא (העתידי). */
+export const DocumentType = z.enum(['payslip', 'form_106', 'personal_info_report', 'unknown']);
+export type DocumentType = z.infer<typeof DocumentType>;
+
+/**
+ * זהות אדם — הבסיס המשותף לכל סוגי המסמכים. סכימות ספציפיות (Payslip,
+ * Form106) מרחיבות עם `.extend()` לפי מה שרלוונטי להן (למשל Payslip
+ * מוסיף jobTitle/department; Form106 מוסיף birthDate/gender).
+ * nationalIdLast4 נשמר תמיד מוסתר: 4 ספרות אחרונות בלבד (§12).
+ */
+export const PersonIdentity = z.object({
+  fullName: Extracted(z.string()).nullable(),
+  nationalIdLast4: z.string().length(4).nullable(),
+});
+export type PersonIdentity = z.infer<typeof PersonIdentity>;
+
+/** זהות מעסיק — משותפת בין סוגי מסמכים ללא הרחבה נוספת עד כה. */
+export const EmployerIdentity = z.object({
+  name: z.string().nullable(),
+  companyId: z.string().nullable(), // ח.פ.
+  deductionsFileId: z.string().nullable(), // מספר תיק ניכויים
+});
+export type EmployerIdentity = z.infer<typeof EmployerIdentity>;

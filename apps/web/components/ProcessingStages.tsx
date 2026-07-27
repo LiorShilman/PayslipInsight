@@ -2,11 +2,12 @@
 
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
-export type Stage = 'reading' | 'extracting' | 'validating';
+export type Stage = 'reading' | 'classifying' | 'extracting' | 'validating';
 
-const STAGE_ORDER: Stage[] = ['reading', 'extracting', 'validating'];
+const STAGE_ORDER: Stage[] = ['reading', 'classifying', 'extracting', 'validating'];
 const STAGE_LABELS: Record<Stage, string> = {
   reading: 'קורא את המסמך',
+  classifying: 'מזהה סוג מסמך',
   extracting: 'מחלץ נתונים',
   validating: 'מאמת',
 };

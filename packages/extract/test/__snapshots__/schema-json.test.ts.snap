@@ -1,5 +1,542 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`form106JsonSchema > stays stable (SPEC.md §13.2 — snapshot the derived JSON Schema) 1`] = `
+{
+  "$ref": "#/definitions/Form106",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Form106": {
+      "additionalProperties": false,
+      "properties": {
+        "employee": {
+          "additionalProperties": false,
+          "properties": {
+            "birthDate": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "employeeNumber": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "fullName": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "bbox": {
+                              "items": [
+                                {
+                                  "type": "number",
+                                },
+                                {
+                                  "type": "number",
+                                },
+                                {
+                                  "type": "number",
+                                },
+                                {
+                                  "type": "number",
+                                },
+                              ],
+                              "maxItems": 4,
+                              "minItems": 4,
+                              "type": "array",
+                            },
+                            "confidence": {
+                              "maximum": 1,
+                              "minimum": 0,
+                              "type": "number",
+                            },
+                            "page": {
+                              "minimum": 0,
+                              "type": "integer",
+                            },
+                            "rawText": {
+                              "type": "string",
+                            },
+                          },
+                          "required": [
+                            "page",
+                            "bbox",
+                            "rawText",
+                            "confidence",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "gender": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "male",
+                    "female",
+                  ],
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "maritalStatus": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "nationalIdLast4": {
+              "anyOf": [
+                {
+                  "maxLength": 4,
+                  "minLength": 4,
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+          },
+          "required": [
+            "fullName",
+            "nationalIdLast4",
+            "employeeNumber",
+            "birthDate",
+            "gender",
+            "maritalStatus",
+          ],
+          "type": "object",
+        },
+        "employer": {
+          "additionalProperties": false,
+          "properties": {
+            "companyId": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "deductionsFileId": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "name": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+          },
+          "required": [
+            "name",
+            "companyId",
+            "deductionsFileId",
+          ],
+          "type": "object",
+        },
+        "extraction": {
+          "additionalProperties": false,
+          "properties": {
+            "attempts": {
+              "type": "integer",
+            },
+            "engine": {
+              "enum": [
+                "template",
+                "llm",
+                "template+llm",
+              ],
+              "type": "string",
+            },
+            "modelId": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "overallConfidence": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number",
+            },
+            "warnings": {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "required": [
+            "engine",
+            "modelId",
+            "attempts",
+            "overallConfidence",
+            "warnings",
+          ],
+          "type": "object",
+        },
+        "fundContributions": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "depositBase": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Money",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+                "description": "amount in agorot (1/100 ILS)",
+              },
+              "employee": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Money",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+                "description": "amount in agorot (1/100 ILS)",
+              },
+              "employer": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Money",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+                "description": "amount in agorot (1/100 ILS)",
+              },
+              "fundName": {
+                "type": "string",
+              },
+              "fundNumber": {
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "fundType": {
+                "enum": [
+                  "pension",
+                  "severance",
+                  "study_fund",
+                  "disability_insurance",
+                  "other",
+                ],
+                "type": "string",
+              },
+              "prov": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Form106/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+              },
+            },
+            "required": [
+              "fundNumber",
+              "fundName",
+              "fundType",
+              "depositBase",
+              "employee",
+              "employer",
+              "prov",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "lineItems": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "amount": {
+                "$ref": "#/definitions/Money",
+              },
+              "description": {
+                "type": "string",
+              },
+              "fieldCode": {
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "prov": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Form106/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+              },
+            },
+            "required": [
+              "fieldCode",
+              "description",
+              "amount",
+              "prov",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "meta": {
+          "additionalProperties": false,
+          "properties": {
+            "docType": {
+              "const": "form_106",
+              "type": "string",
+            },
+            "taxYear": {
+              "type": "integer",
+            },
+          },
+          "required": [
+            "docType",
+            "taxYear",
+          ],
+          "type": "object",
+        },
+        "schemaVersion": {
+          "const": "1.0",
+          "type": "string",
+        },
+        "taxProfile": {
+          "additionalProperties": false,
+          "properties": {
+            "creditPoints": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/Form106/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "type": "number",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+          },
+          "required": [
+            "creditPoints",
+          ],
+          "type": "object",
+        },
+        "totals": {
+          "additionalProperties": false,
+          "properties": {
+            "incomeTaxWithheld": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/Form106/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "nationalInsuranceInsuredIncome": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/Form106/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "taxableWages": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/Form106/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "totalEmployerPensionContribution": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/Form106/properties/employee/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+          },
+          "required": [
+            "taxableWages",
+            "incomeTaxWithheld",
+            "totalEmployerPensionContribution",
+            "nationalInsuranceInsuredIncome",
+          ],
+          "type": "object",
+        },
+      },
+      "required": [
+        "schemaVersion",
+        "meta",
+        "employee",
+        "employer",
+        "taxProfile",
+        "totals",
+        "fundContributions",
+        "lineItems",
+        "extraction",
+      ],
+      "type": "object",
+    },
+    "Money": {
+      "description": "amount in agorot (1/100 ILS)",
+      "type": "integer",
+    },
+  },
+}
+`;
+
 exports[`payslipJsonSchema > stays stable (SPEC.md §13.2 — snapshot the derived JSON Schema) 1`] = `
 {
   "$ref": "#/definitions/Payslip",
@@ -1009,6 +1546,748 @@ exports[`payslipJsonSchema > stays stable (SPEC.md §13.2 — snapshot the deriv
         "balances",
         "attendance",
         "payment",
+        "extraction",
+      ],
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`personalInfoReportJsonSchema > stays stable (SPEC.md §13.2 — snapshot the derived JSON Schema) 1`] = `
+{
+  "$ref": "#/definitions/PersonalInfoReport",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Money": {
+      "description": "amount in agorot (1/100 ILS)",
+      "type": "integer",
+    },
+    "PersonalInfoReport": {
+      "additionalProperties": false,
+      "properties": {
+        "advisor": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+                "phone": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+              },
+              "required": [
+                "name",
+                "phone",
+              ],
+              "type": "object",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "deposits": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "depositDate": {
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "employeeContribution": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Money",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+                "description": "amount in agorot (1/100 ILS)",
+              },
+              "employerContribution": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Money",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+                "description": "amount in agorot (1/100 ILS)",
+              },
+              "employerName": {
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "prov": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/PersonalInfoReport/properties/participant/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+              },
+              "salaryAmount": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Money",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+                "description": "amount in agorot (1/100 ILS)",
+              },
+              "salaryMonth": {
+                "type": [
+                  "string",
+                  "null",
+                ],
+              },
+              "severanceContribution": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Money",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+                "description": "amount in agorot (1/100 ILS)",
+              },
+              "total": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/Money",
+                  },
+                  {
+                    "type": "null",
+                  },
+                ],
+                "description": "amount in agorot (1/100 ILS)",
+              },
+            },
+            "required": [
+              "employerName",
+              "depositDate",
+              "salaryMonth",
+              "salaryAmount",
+              "employeeContribution",
+              "employerContribution",
+              "severanceContribution",
+              "total",
+              "prov",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "employer": {
+          "additionalProperties": false,
+          "properties": {
+            "companyId": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "deductionsFileId": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "name": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+          },
+          "required": [
+            "name",
+            "companyId",
+            "deductionsFileId",
+          ],
+          "type": "object",
+        },
+        "extraction": {
+          "additionalProperties": false,
+          "properties": {
+            "attempts": {
+              "type": "integer",
+            },
+            "engine": {
+              "enum": [
+                "template",
+                "llm",
+                "template+llm",
+              ],
+              "type": "string",
+            },
+            "modelId": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "overallConfidence": {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number",
+            },
+            "warnings": {
+              "items": {
+                "type": "string",
+              },
+              "type": "array",
+            },
+          },
+          "required": [
+            "engine",
+            "modelId",
+            "attempts",
+            "overallConfidence",
+            "warnings",
+          ],
+          "type": "object",
+        },
+        "fundMovements": {
+          "additionalProperties": false,
+          "properties": {
+            "closingBalance": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/PersonalInfoReport/properties/participant/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "deathInsuranceCost": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/PersonalInfoReport/properties/participant/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "deposits": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/PersonalInfoReport/properties/participant/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "disabilityInsuranceCost": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/PersonalInfoReport/properties/participant/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "investmentGains": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/PersonalInfoReport/properties/participant/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "managementFees": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/PersonalInfoReport/properties/participant/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "openingBalance": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/PersonalInfoReport/properties/participant/properties/fullName/anyOf/0/properties/prov/anyOf/0",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "$ref": "#/definitions/Money",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+          },
+          "required": [
+            "openingBalance",
+            "deposits",
+            "investmentGains",
+            "managementFees",
+            "disabilityInsuranceCost",
+            "deathInsuranceCost",
+            "closingBalance",
+          ],
+          "type": "object",
+        },
+        "investmentTracks": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "returnRate": {
+                "type": [
+                  "number",
+                  "null",
+                ],
+              },
+              "trackName": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "trackName",
+              "returnRate",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "managementFeeRates": {
+          "additionalProperties": false,
+          "properties": {
+            "feeFromBalance": {
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+            "feeFromDeposits": {
+              "type": [
+                "number",
+                "null",
+              ],
+            },
+          },
+          "required": [
+            "feeFromDeposits",
+            "feeFromBalance",
+          ],
+          "type": "object",
+        },
+        "meta": {
+          "additionalProperties": false,
+          "properties": {
+            "docType": {
+              "const": "personal_info_report",
+              "type": "string",
+            },
+            "fundCompanyName": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "fundKind": {
+              "enum": [
+                "pension",
+                "gemel_investment",
+                "study_fund",
+                "manager_insurance",
+                "other",
+              ],
+              "type": "string",
+            },
+            "planName": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+            "reportPeriod": {
+              "additionalProperties": false,
+              "properties": {
+                "fromDate": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+                "toDate": {
+                  "type": [
+                    "string",
+                    "null",
+                  ],
+                },
+              },
+              "required": [
+                "fromDate",
+                "toDate",
+              ],
+              "type": "object",
+            },
+            "reportSentDate": {
+              "type": [
+                "string",
+                "null",
+              ],
+            },
+          },
+          "required": [
+            "docType",
+            "fundKind",
+            "fundCompanyName",
+            "planName",
+            "reportPeriod",
+            "reportSentDate",
+          ],
+          "type": "object",
+        },
+        "participant": {
+          "additionalProperties": false,
+          "properties": {
+            "fullName": {
+              "anyOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "prov": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "bbox": {
+                              "items": [
+                                {
+                                  "type": "number",
+                                },
+                                {
+                                  "type": "number",
+                                },
+                                {
+                                  "type": "number",
+                                },
+                                {
+                                  "type": "number",
+                                },
+                              ],
+                              "maxItems": 4,
+                              "minItems": 4,
+                              "type": "array",
+                            },
+                            "confidence": {
+                              "maximum": 1,
+                              "minimum": 0,
+                              "type": "number",
+                            },
+                            "page": {
+                              "minimum": 0,
+                              "type": "integer",
+                            },
+                            "rawText": {
+                              "type": "string",
+                            },
+                          },
+                          "required": [
+                            "page",
+                            "bbox",
+                            "rawText",
+                            "confidence",
+                          ],
+                          "type": "object",
+                        },
+                        {
+                          "type": "null",
+                        },
+                      ],
+                    },
+                    "value": {
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "value",
+                    "prov",
+                  ],
+                  "type": "object",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "nationalIdLast4": {
+              "anyOf": [
+                {
+                  "maxLength": 4,
+                  "minLength": 4,
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+          },
+          "required": [
+            "fullName",
+            "nationalIdLast4",
+          ],
+          "type": "object",
+        },
+        "projectedBenefits": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "dependentParentMonthlyPension": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/Money",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                  "description": "amount in agorot (1/100 ILS)",
+                },
+                "disabilityMonthlyPension": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/Money",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                  "description": "amount in agorot (1/100 ILS)",
+                },
+                "orphanMonthlyPension": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/Money",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                  "description": "amount in agorot (1/100 ILS)",
+                },
+                "retirementMonthlyPension": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/Money",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                  "description": "amount in agorot (1/100 ILS)",
+                },
+                "widowMonthlyPension": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/Money",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                  "description": "amount in agorot (1/100 ILS)",
+                },
+              },
+              "required": [
+                "retirementMonthlyPension",
+                "widowMonthlyPension",
+                "orphanMonthlyPension",
+                "dependentParentMonthlyPension",
+                "disabilityMonthlyPension",
+              ],
+              "type": "object",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "schemaVersion": {
+          "const": "1.0",
+          "type": "string",
+        },
+      },
+      "required": [
+        "schemaVersion",
+        "meta",
+        "participant",
+        "employer",
+        "projectedBenefits",
+        "fundMovements",
+        "managementFeeRates",
+        "investmentTracks",
+        "deposits",
+        "advisor",
         "extraction",
       ],
       "type": "object",

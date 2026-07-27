@@ -1,5 +1,10 @@
-import { deriveMetrics } from '@payslip-insight/core';
-import { extractWithRetry } from '@payslip-insight/extract';
+import { derivePersonalInfoReportMetrics, deriveForm106Metrics, deriveMetrics } from '@payslip-insight/core';
+import {
+  classifyDocument,
+  extractForm106WithRetry,
+  extractPersonalInfoReportWithRetry,
+  extractWithRetry,
+} from '@payslip-insight/extract';
 import { IngestError, normalizeDocument, type IngestErrorCode } from '@payslip-insight/normalize';
 import { NextResponse } from 'next/server';
 
@@ -15,13 +20,13 @@ const ERROR_MESSAGES: Record<IngestErrorCode, { he: string; retryable: boolean }
 };
 
 /**
- * שלב 1-6 בצינור העיבוד (גרסת M2 מצומצמת — ראה תוכנית): normalize → extract
- * עם retry → validate → derive. שום דבר לא נשמר בצד שרת; התוצאה המלאה
- * מגיעה ללקוח דרך אירוע SSE אחרון, שמחזיק אותה רק ב-state (P5).
+ * שלב 1-6 בצינור העיבוד (גרסת M2 מצומצמת — ראה תוכנית): normalize →
+ * classify → extract עם retry (לפי סוג מסמך) → validate → derive. שום
+ * דבר לא נשמר בצד שרת; התוצאה המלאה מגיעה ללקוח דרך אירוע SSE אחרון.
  *
  * normalize רץ *לפני* שפותחים את הסטרים כדי ששגיאות כמו PASSWORD_REQUIRED
- * יוכלו לחזור כ-JSON רגיל עם status code נכון (SSE תמיד 200). מ-extract
- * ואילך — סטרים, כי זה השלב הארוך והזמן להתקדמות אמיתית (§ תווית-לפי-תווית).
+ * יוכלו לחזור כ-JSON רגיל עם status code נכון (SSE תמיד 200). מ-classify
+ * ואילך — סטרים, כי extract הוא השלב הארוך והזמן להתקדמות אמיתית.
  */
 export async function POST(request: Request): Promise<Response> {
   const formData = await request.formData();
@@ -50,36 +55,77 @@ export async function POST(request: Request): Promise<Response> {
 
   const normalizedDoc = doc;
   const encoder = new TextEncoder();
+  /** המשתמש יכול לסגור טאב/לנווט משם באמצע חילוץ ארוך — זה תרחיש רגיל,
+   * לא שגיאה. בלי זה, ניסיון enqueue אחרי ניתוק זורק "Controller is
+   * already closed" ומזהם את הלוג עם שגיאה מטעה. */
+  let clientDisconnected = false;
   const stream = new ReadableStream({
     async start(controller) {
       function send(event: string, data: unknown) {
-        controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
+        if (clientDisconnected) return;
+        try {
+          controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
+        } catch {
+          clientDisconnected = true;
+        }
       }
       try {
-        send('stage', { stage: 'extracting' });
-        const { payslip, validation, attempts } = await extractWithRetry(normalizedDoc, {
-          onLabel: (label) => send('progress', { label }),
-        });
-        send('stage', { stage: 'validating' });
-        const derived = deriveMetrics(payslip, null);
-        send('done', {
-          payslip,
-          derived,
-          validation,
-          attempts,
-          pages: normalizedDoc.pages.map((page) => ({
-            index: page.index,
-            width: page.width,
-            height: page.height,
-            png: page.rasterPng.toString('base64'),
-          })),
-        });
+        send('stage', { stage: 'classifying' });
+        const classification = await classifyDocument(normalizedDoc);
+
+        const pages = normalizedDoc.pages.map((page) => ({
+          index: page.index,
+          width: page.width,
+          height: page.height,
+          png: page.rasterPng.toString('base64'),
+        }));
+
+        if (classification.docType === 'payslip') {
+          send('stage', { stage: 'extracting' });
+          const { payslip, validation, attempts } = await extractWithRetry(normalizedDoc, {
+            onLabel: (label) => send('progress', { label }),
+          });
+          send('stage', { stage: 'validating' });
+          const derived = deriveMetrics(payslip, null);
+          send('done', { docType: 'payslip', payslip, derived, validation, attempts, pages });
+        } else if (classification.docType === 'form_106') {
+          send('stage', { stage: 'extracting' });
+          const { form106, validation, attempts } = await extractForm106WithRetry(normalizedDoc, {
+            onLabel: (label) => send('progress', { label }),
+          });
+          send('stage', { stage: 'validating' });
+          const derived = deriveForm106Metrics(form106);
+          send('done', { docType: 'form_106', form106, derived, validation, attempts, pages });
+        } else if (classification.docType === 'personal_info_report') {
+          send('stage', { stage: 'extracting' });
+          const { report, validation, attempts } = await extractPersonalInfoReportWithRetry(normalizedDoc, {
+            onLabel: (label) => send('progress', { label }),
+          });
+          send('stage', { stage: 'validating' });
+          const derived = derivePersonalInfoReportMetrics(report);
+          send('done', { docType: 'personal_info_report', report, derived, validation, attempts, pages });
+        } else {
+          send('error', {
+            code: 'UNSUPPORTED_DOCUMENT_TYPE',
+            messageHe: 'זה סוג מסמך שהמערכת עדיין לא תומכת בו. כרגע נתמכים תלושי שכר, טופסי 106, ודוחות מידע אישי.',
+            retryable: false,
+          });
+        }
       } catch (err) {
         console.error('extraction failed', err instanceof Error ? err.message : 'unknown error');
         send('error', { code: 'EXTRACTION_FAILED', messageHe: 'החילוץ נכשל. ניתן לנסות שוב.', retryable: true });
       } finally {
-        controller.close();
+        if (!clientDisconnected) {
+          try {
+            controller.close();
+          } catch {
+            // הלקוח ניתק בדיוק בין הבדיקה לסגירה — לא שגיאה אמיתית.
+          }
+        }
       }
+    },
+    cancel() {
+      clientDisconnected = true;
     },
   });
 

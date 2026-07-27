@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Extracted, Money, Provenance } from './common.js';
+import { EmployerIdentity, Extracted, Money, PersonIdentity, Provenance } from './common.js';
 
 export const LineItemCategory = z.enum([
   // תשלומים
@@ -88,10 +88,7 @@ export const Payslip = z.object({
     currency: z.literal('ILS'),
   }),
 
-  employee: z.object({
-    fullName: Extracted(z.string()).nullable(),
-    /** מאוחסן תמיד מוסתר: 4 ספרות אחרונות בלבד. ראה §12. */
-    nationalIdLast4: z.string().length(4).nullable(),
+  employee: PersonIdentity.extend({
     employeeNumber: z.string().nullable(),
     department: z.string().nullable(),
     jobTitle: z.string().nullable(),
@@ -102,11 +99,7 @@ export const Payslip = z.object({
     grade: z.string().nullable(),
   }),
 
-  employer: z.object({
-    name: z.string().nullable(),
-    companyId: z.string().nullable(), // ח.פ.
-    deductionsFileId: z.string().nullable(), // מספר תיק ניכויים
-  }),
+  employer: EmployerIdentity,
 
   taxProfile: z.object({
     creditPoints: z.number().nullable(), // נקודות זיכוי

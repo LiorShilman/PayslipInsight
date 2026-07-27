@@ -3,32 +3,31 @@
 import { Group } from '@visx/group';
 import { scaleBand, scaleLinear } from '@visx/scale';
 import { formatILS } from '@payslip-insight/core';
-import type { DerivedMetrics, RetirementFund } from '@payslip-insight/core';
 import { Card, CardTitle } from '@/components/ui/card';
-
-const FUND_LABELS: Record<RetirementFund, string> = {
-  pension: 'פנסיה',
-  severance: 'פיצויים',
-  studyFund: 'קרן השתלמות',
-  managerInsurance: 'ביטוח מנהלים',
-};
 
 const HEIGHT = 260;
 const MARGIN = { top: 28, right: 12, bottom: 32, left: 12 };
 
-type Props = { retirementBreakdown: DerivedMetrics['retirementBreakdown'] };
+/** צורה גנרית — נתוני תלוש (RetirementFund) וטופס 106 (Form106RetirementFund)
+ * שניהם מתאימים לזה מבנית, גם שהם union types שונים בפירוט הקרנות. */
+export type FundBreakdownRow = { fund: string; employee: number; employer: number };
+
+type Props = {
+  breakdown: FundBreakdownRow[];
+  fundLabels: Record<string, string>;
+};
 
 /** SPEC.md §8.2 — פנסיה/פיצויים/קה"ל: עובד מול מעסיק, לכל קרן בנפרד, בגרף עמודות מקובצות. */
-export function RetirementSavingsChart({ retirementBreakdown }: Props) {
-  if (retirementBreakdown.length === 0) return null;
+export function RetirementSavingsChart({ breakdown, fundLabels }: Props) {
+  if (breakdown.length === 0) return null;
 
-  const width = Math.max(420, retirementBreakdown.length * 150);
+  const width = Math.max(420, breakdown.length * 150);
   const innerWidth = width - MARGIN.left - MARGIN.right;
   const innerHeight = HEIGHT - MARGIN.top - MARGIN.bottom;
-  const maxValue = Math.max(...retirementBreakdown.flatMap((r) => [r.employee, r.employer]), 1);
+  const maxValue = Math.max(...breakdown.flatMap((r) => [r.employee, r.employer]), 1);
 
   const fundScale = scaleBand<string>({
-    domain: retirementBreakdown.map((r) => r.fund),
+    domain: breakdown.map((r) => r.fund),
     range: [0, innerWidth],
     padding: 0.35,
   });
@@ -49,8 +48,9 @@ export function RetirementSavingsChart({ retirementBreakdown }: Props) {
           <title id="retirement-title">פנסיה, פיצויים וקרן השתלמות — עובד מול מעסיק</title>
           <Group left={MARGIN.left} top={MARGIN.top}>
             <line x1={0} y1={innerHeight} x2={innerWidth} y2={innerHeight} stroke="var(--color-ink)" strokeOpacity={0.15} />
-            {retirementBreakdown.map((row) => {
+            {breakdown.map((row) => {
               const fundX = fundScale(row.fund) ?? 0;
+              const label = fundLabels[row.fund] ?? row.fund;
               return (
                 <Group key={row.fund}>
                   {(['employee', 'employer'] as const).map((who) => {
@@ -64,7 +64,7 @@ export function RetirementSavingsChart({ retirementBreakdown }: Props) {
                     return (
                       <Group key={who}>
                         <rect x={barX} y={barY} width={barWidth} height={barHeight} fill={color} rx={2}>
-                          <title>{`${who === 'employee' ? 'עובד' : 'מעסיק'} — ${FUND_LABELS[row.fund]}: ${formatILS(value)}`}</title>
+                          <title>{`${who === 'employee' ? 'עובד' : 'מעסיק'} — ${label}: ${formatILS(value)}`}</title>
                         </rect>
                         <text
                           x={barX + barWidth / 2}
@@ -88,7 +88,7 @@ export function RetirementSavingsChart({ retirementBreakdown }: Props) {
                     fontFamily="var(--font-body)"
                     fill="var(--color-ink)"
                   >
-                    {FUND_LABELS[row.fund]}
+                    {label}
                   </text>
                 </Group>
               );
@@ -120,9 +120,9 @@ export function RetirementSavingsChart({ retirementBreakdown }: Props) {
             </tr>
           </thead>
           <tbody>
-            {retirementBreakdown.map((row) => (
+            {breakdown.map((row) => (
               <tr key={row.fund} className="border-b border-ink/5">
-                <td className="py-1">{FUND_LABELS[row.fund]}</td>
+                <td className="py-1">{fundLabels[row.fund] ?? row.fund}</td>
                 <td className="py-1" dir="ltr">
                   {formatILS(row.employee)}
                 </td>
